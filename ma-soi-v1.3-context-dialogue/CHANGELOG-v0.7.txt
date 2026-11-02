@@ -1,0 +1,10 @@
+Ma Sói v0.7 - Cập nhật phiên tòa và đồng hồ
+
+- Thiết lập trước ván: Thảo luận 180s, Đề cử 90s, Biện hộ 45s/ứng viên, Biểu quyết 30s/ứng viên, ngưỡng đề cử 20% số người còn sống. Tất cả có thể chỉnh.
+- Luồng ngày: thảo luận -> đề cử -> biện hộ từng ứng viên -> biểu quyết kín CÓ/KHÔNG từng ứng viên -> kết án tối đa một người.
+- Ngưỡng kết án: ít nhất 2/3 toàn bộ người sống; không bầu vẫn tính vào mẫu số. Hòa tỷ lệ cao nhất thì không xử tử.
+- Đề cử: mỗi người có thể đề cử nhiều người, một lần cho mỗi ứng viên; không ai đạt ngưỡng thì xét các ứng viên có số đề cử cao nhất; không có đề cử thì bỏ qua phiên tòa.
+- Đồng hồ đếm ngược theo thời gian thực, không dừng trong khi bot đang trả lời.
+- Chưa bổ sung nút tạm dừng và chưa kiểm thử trọn bộ 36 vai. Hãy chơi thử và báo tình huống cụ thể nếu phát sinh.
+
+Chạy start_game.bat trên Windows (cần Python 3), mở http://127.0.0.1:8080

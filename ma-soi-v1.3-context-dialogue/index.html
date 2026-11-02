@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ma Sói: Đại Chiến 36 Sao (Werewolf with Bots)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header Điều Hướng -->
+  <header class="app-header">
+    <div class="logo-area">
+      <div class="logo-icon">🐺</div>
+      <div>
+        <h1 class="app-title">MA SÓI: ĐẠI CHIẾN 36 SAO</h1>
+        <p class="app-subtitle">Hệ Thống 36 Vai Trò & AI Bot Đấu Trí</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button id="btnToggleSound" class="btn-header" title="Bật/Tắt Âm Thanh">
+        <span id="soundIcon">🔊</span> Âm Thanh
+      </button>
+      <button id="btnToggleGodMode" class="btn-header" title="Xem danh tính thật của Bot (Dành cho Quản trò)">
+        👁️ Chế Độ Soi
+      </button>
+      <button id="btnOpenCodex" class="btn-header" title="Xem danh mục 36 vai trò">
+        📖 Bách Khoa 36 Vai
+      </button>
+      <button id="btnNewGame" class="btn-header" style="display: none;">
+        🔄 Phòng Mới
+      </button>
+    </div>
+  </header>
+
+  <!-- Container Chính -->
+  <main class="main-container">
+
+    <!-- ==========================================
+         VIEW 1: CÀI ĐẶT TRẬN ĐẤU (SETUP VIEW)
+         ========================================== -->
+    <section id="setupView" class="setup-view">
+      
+      <!-- Cột Trái: Chọn Kịch Bản hoặc Tùy Chỉnh 36 Vai -->
+      <div class="setup-card">
+        <h2 class="section-title">✨ 1. Chọn Kịch Bản Trận Đấu</h2>
+        
+        <!-- Các Preset phổ biến -->
+        <div id="presetsGrid" class="presets-grid">
+          <!-- Render tự động từ GAME_PRESETS -->
+        </div>
+
+        <h2 class="section-title" style="margin-top: 24px;">
+          🛠️ 2. Hoặc Tùy Chỉnh 36 Vai Trò
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">(Tự do cấu hình số lượng từng vai)</span>
+        </h2>
+
+        <!-- Tabs Phân Loại Phe -->
+        <div class="role-tabs">
+          <button class="role-tab-btn active" data-tab="all">Tất Cả (36)</button>
+          <button class="role-tab-btn" data-tab="werewolf">🐺 Phe Sói (10)</button>
+          <button class="role-tab-btn" data-tab="villager">👨‍🌾 Phe Dân Làng (20)</button>
+          <button class="role-tab-btn" data-tab="neutral">🎭 Phe Độc Lập (6)</button>
+        </div>
+
+        <!-- Danh Sách 36 Vai Trò Có Nút Tăng/Giảm -->
+        <div id="customRolesList" class="custom-roles-list">
+          <!-- Render tự động từ ROLES -->
+        </div>
+      </div>
+
+      <!-- Cột Phải: Thông Tin Người Chơi & Bắt Đầu -->
+      <div class="setup-card player-config-panel">
+        <h2 class="section-title">👤 Thông Tin Của Bạn</h2>
+
+        <div class="input-group">
+          <label class="input-label" for="humanNameInput">Tên Của Bạn</label>
+          <input type="text" id="humanNameInput" class="text-input" value="Thám Tử Lừng Danh" maxlength="18">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" for="humanRoleSelect">Vai Muốn Đóng</label>
+          <select id="humanRoleSelect" class="select-input">
+            <option value="RANDOM">🎲 Ngẫu Nhiên (Bất ngờ)</option>
+            <!-- Render danh sách vai trong kịch bản hiện tại -->
+          </select>
+        </div>
+
+        <!-- Bảng Tóm Tắt Kịch Bản -->
+        <div class="role-summary-box">
+          <div class="summary-row">
+            <span>Tổng Người Chơi:</span>
+            <strong id="summaryTotalPlayers" style="color: var(--gold);">8</strong>
+          </div>
+          <div class="summary-row">
+            <span>🐺 Phe Sói:</span>
+            <span id="summaryWolfCount" style="color: var(--accent-wolf);">2</span>
+          </div>
+          <div class="summary-row">
+            <span>👨‍🌾 Phe Dân Làng:</span>
+            <span id="summaryVillagerCount" style="color: var(--accent-villager);">6</span>
+          </div>
+          <div class="summary-row">
+            <span>🎭 Phe Độc Lập:</span>
+            <span id="summaryNeutralCount" style="color: var(--accent-neutral);">0</span>
+          </div>
+        </div>
+
+        <div class="setup-card timing-config" style="margin:18px 0;padding:16px">
+          <h3 style="margin-bottom:12px">⏱️ Thời gian &amp; phiên tòa</h3>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Tùy chỉnh trước mỗi ván. Đồng hồ chạy liên tục, kể cả khi bot đang suy nghĩ.</p>
+          <label>Thảo luận <input id="timing_discussion" type="number" min="5" max="3600" value="180"> giây</label>
+          <label>Đề cử <input id="timing_nomination" type="number" min="5" max="3600" value="90"> giây</label>
+          <label>Biện hộ <input id="timing_defense" type="number" min="5" max="3600" value="45"> giây / ứng viên</label>
+          <label>Biểu quyết <input id="timing_voting" type="number" min="5" max="3600" value="30"> giây / ứng viên</label>
+          <label>Luật xử tử <select id="trial_vote_rule" aria-label="Ngưỡng biểu quyết xử tử"><option value="supermajority">Truyền thống: 2/3 người sống</option><option value="majority">Thử nghiệm: quá bán (>50%)</option></select></label>
+          <p style="font-size:12px;color:var(--text-muted);margin:6px 0 10px">Tính trên toàn bộ người còn sống, kể cả phiếu trắng và ứng viên. Không thay đổi ngưỡng đề cử.</p>
+          <label>Ngưỡng đề cử <input id="timing_threshold" type="number" min="1" max="100" value="20"> % người còn sống</label>
+        </div>
+        <button id="btnStartGame" class="btn-start-game">
+          🔥 BẮT ĐẦU VÁN CHƠI
+        </button>
+      </div>
+
+    </section>
+
+    <!-- ==========================================
+         VIEW 2: MÀN HÌNH BÀN CHƠI (GAMEPLAY VIEW)
+         ========================================== -->
+    <section id="gameplayView" class="gameplay-view" style="display: none;">
+      
+      <!-- Nhật ký bên trái, bàn chơi ở giữa, tranh luận bên phải -->
+      <aside class="left-sidebar">
+        <!-- Khung Nhật Ký Trận Đấu (Chronicle) -->
+        <div class="sidebar-panel chronicle-panel">
+          <div class="panel-header">
+            <span>📜 Biên Niên Sử Làng</span>
+            <span id="chronicleDayTag" style="font-size: 11px; color: var(--text-muted);">Ngày 0</span>
+          </div>
+          <div id="chronicleList" class="chronicle-list">
+            <!-- Render các sự kiện -->
+          </div>
+        </div>
+      </aside>
+      <div class="village-board">
+        
+        <!-- Thanh Trạng Thái Ngày/Đêm -->
+        <div class="phase-indicator-bar">
+          <div id="phaseTitle" class="phase-title">
+            <span id="phaseIcon">🌙</span>
+            <span id="phaseText">Đêm Thứ 1 - Ngôi Làng Ngủ Say</span>
+          </div>
+          <div id="phaseTimerBadge" class="phase-timer-badge">
+            <span id="stageClock" class="stage-clock"></span><span id="aliveCountText">8 người còn sống</span>
+          </div>
+        </div>
+
+        <!-- Đấu Trường Vòng Tròn Người Chơi Quanh Lửa Trại -->
+        <div id="playersCircle" class="players-circle-arena">
+          <!-- Render danh sách người chơi & bot -->
+        </div>
+
+        <!-- Bảng Thao Tác Kỹ Năng / Bỏ Phiếu Của Người Chơi -->
+        <div id="actionDock" class="action-dock">
+          <div id="actionPromptText" class="action-prompt-text">
+            <span>⚡ Hành động:</span>
+            <span id="actionInstruction">Đang chờ lượt...</span>
+          </div>
+          <div id="actionButtonsRow" class="action-buttons-row">
+            <!-- Nút bấm hành động động -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Cột Phải: Chat Thảo Luận AI & Nhật Ký Trận Đấu -->
+      <div class="right-sidebar">
+        
+        <!-- Khung Chat Biện Luận Với Bot -->
+        <div class="sidebar-panel chat-panel">
+          <div class="panel-header">
+            <span>💬 Trò Chuyện & Biện Luận Làng</span>
+            <span style="font-size: 11px; color: var(--gold);">Bot Offline</span>
+          </div>
+          
+          <div class="chat-toolbar"><label for="speechPace">Nhịp thoại</label><select id="speechPace"><option value="slow" selected>Chậm · 12 giây</option><option value="normal">Vừa · 8 giây</option><option value="fast">Nhanh · 4 giây</option></select><button type="button" id="toggleDebatePause">⏸ Tạm dừng bot</button><span id="newMessagesNotice" class="new-messages-notice" hidden>↓ Tin nhắn mới</span></div>
+          <div id="messagesList" class="messages-list">
+            <!-- Render tin nhắn chat -->
+          </div>
+
+          <!-- Gợi ý Chat Nhanh Cho Người Chơi -->
+          <div class="quick-chat-chips">
+            <span class="quick-chip" onclick="app.sendQuickChat('Tôi là Tiên Tri! Đêm qua tôi soi thấy có kẻ nói dối!')">🔮 Nhận Tiên Tri</span>
+            <span class="quick-chip" onclick="app.sendQuickChat('Tôi là Dân thường vô tội, đừng vote tôi!')">👨‍🌾 Khẳng định Dân lành</span>
+            <span class="quick-chip" onclick="app.sendQuickChat('Tôi nghi ngờ người vừa phát biểu có hành vi rất mâu thuẫn!')">🤔 Tố cáo kẻ nghi ngờ</span>
+            <span class="quick-chip" onclick="app.sendQuickChat('Mọi người hãy bình tĩnh suy xét, đừng vote hùa!')">⚖️ Kêu gọi bình tĩnh</span>
+          </div>
+
+          <!-- Thanh Nhập Tin Nhắn Chat -->
+          <form id="chatForm" class="chat-input-bar">
+            <input type="text" id="chatInput" class="text-input" style="flex: 1; padding: 8px 12px;" placeholder="Nhập suy luận hoặc chất vấn bot..." autocomplete="off">
+            <button type="submit" class="btn-action-primary" style="padding: 8px 14px;">Gửi</button>
+          </form>
+        </div>
+
+
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       MODAL 1: BÁCH KHOA TOÀN THƯ 36 VAI (ROLE CODEX)
+       ========================================== -->
+  <div id="codexModal" class="modal-backdrop" style="display: none;">
+    <div class="codex-modal">
+      <div class="codex-header">
+        <h2 class="codex-title">📖 Bách Khoa Thư 36 Loại Vai Ma Sói</h2>
+        <button id="btnCloseCodex" class="btn-header">✕ Đóng</button>
+      </div>
+
+      <div class="codex-search-bar">
+        <input type="text" id="codexSearchInput" class="text-input" style="flex: 1;" placeholder="🔍 Tìm kiếm vai theo tên hoặc kỹ năng...">
+        <div class="role-tabs" style="margin-bottom: 0; padding-bottom: 0; border: none;">
+          <button class="role-tab-btn active codex-filter-btn" data-team="all">Tất Cả</button>
+          <button class="role-tab-btn codex-filter-btn" data-team="werewolf">Phe Sói</button>
+          <button class="role-tab-btn codex-filter-btn" data-team="villager">Dân Làng</button>
+          <button class="role-tab-btn codex-filter-btn" data-team="neutral">Độc Lập</button>
+        </div>
+      </div>
+
+      <div id="codexBody" class="codex-body">
+        <!-- Render 36 thẻ bài chi tiết -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 2: MÀN HÌNH GAME OVER / CHIẾN THẮNG
+       ========================================== -->
+  <div id="gameOverModal" class="gameover-overlay" style="display: none;">
+    <div class="gameover-card">
+      <div id="winnerIcon" class="winner-icon">🏆</div>
+      <h2 id="winnerTitle" class="winner-title">PHE DÂN LÀNG CHIẾN THẮNG!</h2>
+      <p id="winnerReason" class="winner-reason">Toàn bộ bầy sói đã bị thanh trừng, hòa bình trở lại với ngôi làng.</p>
+
+      <h3 style="font-size: 14px; text-align: left; margin-bottom: 8px; color: var(--gold);">🎭 Danh Tính Thật Của Toàn Bộ Người Chơi:</h3>
+      <div id="gameoverRevealList" class="gameover-reveal-list">
+        <!-- Render danh sách vai thật của từng người -->
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button id="btnPlayAgain" class="btn-start-game" style="padding: 10px 24px;">🔄 Chơi Lại Cấu Hình Này</button>
+        <button id="btnBackToLobby" class="btn-action-secondary" style="padding: 10px 20px;">⚙️ Đổi Kịch Bản</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script Modules -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
